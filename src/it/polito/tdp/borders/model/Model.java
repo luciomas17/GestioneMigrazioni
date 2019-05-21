@@ -16,12 +16,12 @@ import it.polito.tdp.borders.db.BordersDAO;
 public class Model {
 	
 	private Graph<Country, DefaultEdge> graph ;
-	private List<Country> countries ;
 	private Map<Integer,Country> countriesMap ;
+	private Simulatore sim ;
 	
 	public Model() {
 		this.countriesMap = new HashMap<>() ;
-
+		this.sim = new Simulatore() ;
 	}
 	
 	public void creaGrafo(int anno) {
@@ -51,6 +51,36 @@ public class Model {
 		}
 		Collections.sort(list);
 		return list ;
+	}
+
+	public List<Country> getCountries() {
+		List<Country> res = new ArrayList<>();
+		for(Country c : this.countriesMap.values())
+			res.add(c);
+		Collections.sort(res);
+		
+		return res;
+	}
+
+	public void simula(Country partenza) {
+		sim.init(partenza, this.graph);
+		sim.run();
+	}
+
+	public int getLastT() {
+		return this.sim.getLastT();
+	}
+
+	public List<CountryAndNumber> getStanziali() {
+		Map<Country, Integer> stanziali = this.sim.getStanziali();
+		List<CountryAndNumber> stanzialiList = new ArrayList<>();
+		for(Country c : stanziali.keySet()) {
+			CountryAndNumber cn = new CountryAndNumber(c, stanziali.get(c));
+			stanzialiList.add(cn);
+		}
+		Collections.sort(stanzialiList);
+		
+		return stanzialiList;
 	}
 
 }

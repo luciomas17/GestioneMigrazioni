@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.borders.model.Country;
 import it.polito.tdp.borders.model.CountryAndNumber;
 import it.polito.tdp.borders.model.Model;
 import javafx.event.ActionEvent;
@@ -31,14 +32,15 @@ public class BordersController {
 	private TextField txtAnno; // Value injected by FXMLLoader
 
 	@FXML // fx:id="boxNazione"
-	private ComboBox<?> boxNazione; // Value injected by FXMLLoader
+	private ComboBox<Country> boxNazione; // Value injected by FXMLLoader
 
 	@FXML // fx:id="txtResult"
 	private TextArea txtResult; // Value injected by FXMLLoader
 
 	@FXML
 	void doCalcolaConfini(ActionEvent event) {
-
+		this.txtResult.clear();
+		
 		String annoS = txtAnno.getText();
 		try {
 			int anno = Integer.parseInt(annoS);
@@ -62,11 +64,28 @@ public class BordersController {
 			return;
 		}
 
+		this.boxNazione.getItems().addAll(this.model.getCountries());
 	}
 
 	@FXML
 	void doSimula(ActionEvent event) {
-
+		this.txtResult.clear();
+		
+		Country partenza = this.boxNazione.getValue();
+		if(partenza == null) {
+			this.txtResult.appendText("Devi selezionare uno stato");
+			return;
+		}
+		
+		this.model.simula(partenza);
+		
+		this.txtResult.appendText("SIMULAZIONE A PARTIRE DA " + partenza.toString() + "\n");
+		this.txtResult.appendText("N PASSI: " + model.getLastT() + "\n");
+		for(CountryAndNumber c : this.model.getStanziali()) {
+			if(c.getNumber() > 0)
+				this.txtResult.appendText(c.getCountry() + " = " + c.getNumber() + "\n");
+		}
+			
 	}
 
 	@FXML // This method is called by the FXMLLoader when initialization is complete
